@@ -271,6 +271,7 @@ class SlackBackend(ErrBot):
             )
         log.info("Token accepted")
         self.bot_identifier = SlackPerson(self.slack_web, self.auth["user_id"])
+        log.info("SlackID: {}".format(self.bot_identifier))
         log.debug(self.bot_identifier)
 
         # Inject bot identity to alternative prefixes
