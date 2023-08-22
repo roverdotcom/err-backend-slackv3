@@ -384,6 +384,15 @@ class SlackBackend(ErrBot):
         client.send_socket_mode_response(
             SocketModeResponse(envelope_id=req.envelope_id)
         )
+
+        # Hack to handle interactive messages
+        if req.type == "interactive":
+            for plugin in self.plugin_manager.get_all_active_plugins():
+                callback_interactive = getattr(plugin, "callback_interactive")
+                if callback_interactive:
+                    callback_interactive(req.payload)
+            return
+
         # Dispatch event to the Event API generic event handler.
         self._generic_wrapper(req.payload)
 
