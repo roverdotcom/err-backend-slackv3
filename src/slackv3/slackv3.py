@@ -388,9 +388,11 @@ class SlackBackend(ErrBot):
         # Hack to handle interactive messages
         if req.type == "interactive":
             for plugin in self.plugin_manager.get_all_active_plugins():
-                callback_interactive = getattr(plugin, "callback_interactive")
-                if callback_interactive:
+                try:
+                    callback_interactive = getattr(plugin, "callback_interactive")
                     callback_interactive(req.payload)
+                except AttributeError:
+                    pass
             return
 
         # Dispatch event to the Event API generic event handler.
