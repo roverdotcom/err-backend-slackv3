@@ -377,15 +377,14 @@ class SlackBackend(ErrBot):
         # Acknowledge the request
         client.send_socket_mode_response(SocketModeResponse(envelope_id=req.envelope_id))
 
-        # Rover added
-        # Send interactive slack payloads to plugins with a
-        # callback_slack_sm_interactive method for lower level
-        # handling of interactive blockkit responses.
-        if req.type == "interactive":
+        # Rover added lower level callbacks for certain
+        # request types
+        if req.type in ("interactive", "slash_commands",):
             for plugin in self.plugin_manager.get_all_active_plugins():
+                request_type = req.type
                 try:
-                    callback_interactive = getattr(plugin, "callback_slack_sm_interactive")
-                    callback_interactive(req.payload)
+                    callback_interactive = getattr(plugin, f"callback_slack_sm_{request_type}")
+                    callback_interactive(req)
                 except AttributeError:
                     pass
 
